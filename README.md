@@ -30,7 +30,7 @@ A [Dank Material Shell](https://github.com/Quickshell/DankMaterialShell) widget 
 
 ```bash
 mkdir -p ~/.config/DankMaterialShell/plugins
-git clone https://github.com/gylove1994/deepseek-dms-widget.git \
+git clone https://github.com/suruibin/DeepSeekUsage.git \
   ~/.config/DankMaterialShell/plugins/DeepSeekWidget
 ```
 
@@ -161,6 +161,22 @@ The cookie is obtained by launching a Chromium browser via Playwright, intercept
 │   └── requirements.txt     # Python dependencies
 └── sync.sh                  # Dev sync helper
 ```
+
+## Changelog
+
+### 2026-07-13 — Popup transparency support
+
+- **Fixed:** All card backgrounds, button backgrounds, and borders in `DeepSeekWidget.qml` now respect DMS's global `Theme.popupTransparency` setting by using `Theme.withAlpha()` instead of solid `Theme.surfaceContainerHigh` / `Theme.surfaceContainer` colors.
+- **Fixed:** Same transparency treatment applied to `DeepSeekSettings.qml` (cookie status card and prerequisites card).
+- **Fixed:** Banner backgrounds ("not logged in", "auth expired") and Canvas chart grid/label colors now properly follow the popup transparency.
+- **Note:** Canvas 2D API code was kept using `Qt.rgba()` rather than `Theme.withAlpha()` since the latter doesn't accept string color arguments.
+
+### Modified files
+
+| File | Changes |
+|------|---------|
+| `DeepSeekWidget.qml` | Login button bg/border, data card bg, chart card bg, link buttons bg, refresh button bg, banners, canvas grid/labels — all use `Theme.withAlpha()` with `popupTransparency` |
+| `DeepSeekSettings.qml` | Cookie status card bg, prerequisites card bg — use `Theme.withAlpha()` with `popupTransparency` |
 
 ## License
 

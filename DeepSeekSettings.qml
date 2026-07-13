@@ -59,7 +59,7 @@ PluginSettings {
         width: parent.width
         height: cookieRow.implicitHeight + Theme.spacingM * 2
         radius: Theme.cornerRadius
-        color: Theme.surfaceContainerHigh
+        color: Theme.withAlpha(Theme.surfaceContainerHigh, Theme.popupTransparency)
 
         Row {
             id: cookieRow
@@ -99,7 +99,7 @@ PluginSettings {
             { label: tr.min15 || "15 min", value: "900"  },
             { label: tr.min30 || "30 min", value: "1800" }
         ]
-        defaultValue: "300"
+        defaultValue: "60"
     }
 
     SelectionSetting {
@@ -137,7 +137,7 @@ PluginSettings {
         width: parent.width
         height: prereqCol.implicitHeight + Theme.spacingM * 2
         radius: Theme.cornerRadius
-        color: Theme.surfaceContainer
+        color: Theme.withAlpha(Theme.surfaceContainer, Theme.popupTransparency)
 
         Column {
             id: prereqCol

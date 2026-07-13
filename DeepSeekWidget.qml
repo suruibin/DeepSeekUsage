@@ -296,9 +296,9 @@ PluginComponent {
                     height: notLoginText.implicitHeight + Theme.spacingS * 2
                     visible: root.cookieStatus === "missing"
                     radius: Theme.cornerRadius
-                    color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08)
+                    color: Theme.withAlpha(Theme.primary, 0.08 * Theme.popupTransparency)
                     border.width: 1
-                    border.color: Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.3)
+                    border.color: Theme.withAlpha(Theme.primary, 0.3 * Theme.popupTransparency)
 
                     StyledText {
                         id: notLoginText
@@ -316,9 +316,9 @@ PluginComponent {
                     height: authHintText.implicitHeight + Theme.spacingS * 2
                     visible: root.cookieStatus === "expired"
                     radius: Theme.cornerRadius
-                    color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12)
+                    color: Theme.withAlpha(Theme.error, 0.12 * Theme.popupTransparency)
                     border.width: 1
-                    border.color: Theme.error
+                    border.color: Theme.withAlpha(Theme.error, Theme.popupTransparency)
 
                     StyledText {
                         id: authHintText
@@ -335,9 +335,11 @@ PluginComponent {
                     width: parent.width
                     height: 44
                     radius: Theme.cornerRadius
-                    color: loginArea.containsMouse ? Theme.surfaceContainer : Theme.surfaceContainerHigh
+                    color: loginArea.containsMouse
+                        ? Theme.withAlpha(Theme.surfaceContainer, Theme.popupTransparency)
+                        : Theme.withAlpha(Theme.surfaceContainerHigh, Theme.popupTransparency)
                     border.width: 1
-                    border.color: Theme.outline
+                    border.color: Theme.withAlpha(Theme.outline, Theme.popupTransparency)
                     opacity: root.loginRunning ? 0.6 : 1
 
                     Row {
@@ -379,7 +381,7 @@ PluginComponent {
                     width: parent.width
                     height: dataCol.implicitHeight + Theme.spacingM * 2
                     radius: Theme.cornerRadius
-                    color: Theme.surfaceContainerHigh
+                    color: Theme.withAlpha(Theme.surfaceContainerHigh, Theme.popupTransparency)
 
                     Column {
                         id: dataCol
@@ -439,7 +441,7 @@ PluginComponent {
                         StyledText {
                             text: "K = Thousand  M = Million  B = Billion"
                             font.pixelSize: Theme.fontSizeSmall - 2
-                            color: Qt.rgba(Theme.surfaceVariantText.r, Theme.surfaceVariantText.g, Theme.surfaceVariantText.b, 0.5)
+                            color: Theme.withAlpha(Theme.surfaceVariantText, 0.5 * Theme.popupTransparency)
                         }
                     }
                 }
@@ -449,7 +451,7 @@ PluginComponent {
                     width: parent.width
                     height: 180
                     radius: Theme.cornerRadius
-                    color: Theme.surfaceContainerHigh
+                    color: Theme.withAlpha(Theme.surfaceContainerHigh, Theme.popupTransparency)
 
                     Column {
                         anchors { fill: parent; margins: Theme.spacingM }
@@ -533,6 +535,7 @@ PluginComponent {
                                     ctx.fillRect(barX, baseY - outH, barW, outH)
 
                                     // input (top)
+                                    ctx.globalAlpha = 0.85
                                     ctx.fillStyle = "#89dceb"
                                     ctx.fillRect(barX, baseY - totalH, barW, inpH)
                                     ctx.globalAlpha = 1.0
@@ -554,12 +557,12 @@ PluginComponent {
 
                             Row {
                                 spacing: 4
-                                Rectangle { width: 10; height: 8; radius: 1; color: "#89dceb"; opacity: 0.85; anchors.verticalCenter: parent.verticalCenter }
+                                Rectangle { width: 10; height: 8; radius: 1; color: "#89dceb"; opacity: 0.85 * Theme.popupTransparency; anchors.verticalCenter: parent.verticalCenter }
                                 StyledText { text: tr.inputTokens || "Input"; font.pixelSize: Theme.fontSizeSmall - 1; color: Theme.surfaceVariantText }
                             }
                             Row {
                                 spacing: 4
-                                Rectangle { width: 10; height: 8; radius: 1; color: "#cba6f7"; opacity: 0.85; anchors.verticalCenter: parent.verticalCenter }
+                                Rectangle { width: 10; height: 8; radius: 1; color: "#cba6f7"; opacity: 0.85 * Theme.popupTransparency; anchors.verticalCenter: parent.verticalCenter }
                                 StyledText { text: tr.outputTokens || "Output"; font.pixelSize: Theme.fontSizeSmall - 1; color: Theme.surfaceVariantText }
                             }
                         }
@@ -581,7 +584,9 @@ PluginComponent {
                             width: (parent.width - Theme.spacingS * 2) / 3
                             height: 34
                             radius: Theme.cornerRadius
-                            color: linkArea.containsMouse ? Theme.surfaceContainer : Theme.surfaceContainerHigh
+                            color: linkArea.containsMouse
+                                ? Theme.withAlpha(Theme.surfaceContainer, Theme.popupTransparency)
+                                : Theme.withAlpha(Theme.surfaceContainerHigh, Theme.popupTransparency)
                             StyledText { anchors.centerIn: parent; text: modelData.label; font.pixelSize: Theme.fontSizeSmall; color: Theme.surfaceText }
                             MouseArea { id: linkArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Quickshell.execDetached(["xdg-open", modelData.url]) }
                         }
@@ -593,10 +598,24 @@ PluginComponent {
                     width: parent.width
                     height: 34
                     radius: Theme.cornerRadius
-                    color: refreshArea.containsMouse ? Theme.primary : Theme.surfaceContainerHigh
+                    color: refreshArea.containsMouse
+                        ? Theme.withAlpha(Theme.primary, Theme.popupTransparency)
+                        : Theme.withAlpha(Theme.surfaceContainerHigh, Theme.popupTransparency)
                     opacity: root.fetchRunning ? 0.6 : 1
-                    StyledText { anchors.centerIn: parent; text: root.fetchRunning ? "…" : (tr.refresh || "Refresh"); font.pixelSize: Theme.fontSizeSmall; color: refreshArea.containsMouse ? Theme.onPrimary : Theme.surfaceText }
-                    MouseArea { id: refreshArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; enabled: !root.fetchRunning; onClicked: root.refreshAll() }
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: root.fetchRunning ? "…" : (tr.refresh || "Refresh")
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: refreshArea.containsMouse ? Theme.onPrimary : Theme.surfaceText
+                    }
+                    MouseArea {
+                        id: refreshArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        enabled: !root.fetchRunning
+                        onClicked: root.refreshAll()
+                    }
                 }
 
             } // contentCol
