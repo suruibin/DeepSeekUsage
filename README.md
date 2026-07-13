@@ -12,8 +12,11 @@ A [Dank Material Shell](https://github.com/Quickshell/DankMaterialShell) widget 
 - **i18n** — English and Simplified Chinese (中文)
 
 ## Screenshots
-
+- 改前
 ![Bar pill widget showing DeepSeek balance and usage](./screenshots/bar-pill.png)
+
+- 改后
+![Bar pill widget showing DeepSeek balance and usage](./screenshots/bar-new.png)
 
 ## Requirements
 
