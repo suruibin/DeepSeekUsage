@@ -59,6 +59,7 @@ PluginComponent {
     property int    outputTokens: 0
     property string monthlyCost: "—"
     property string monthlyTokenUsage: "—"
+    property string todayCost: "—"
 
     // History (array of {year,month,inputTokens,outputTokens,cost})
     property var history: pluginData.history || []
@@ -137,6 +138,11 @@ PluginComponent {
             root.daily = o.daily
         }
 
+        // Today's cost
+        if (o.todayCost !== undefined) {
+            todayCost = _fmtCurrency(o.todayCost)
+        }
+
         const now = new Date()
         lastFetchTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     }
@@ -208,39 +214,12 @@ PluginComponent {
         Row {
             spacing: Theme.spacingS
 
-            // DeepSeek Logo (Canvas)
-            Canvas {
+            // DeepSeek Logo (official whale, from favicon)
+            Image {
                 width: 16; height: 16
-                onPaint: {
-                    const ctx = getContext("2d")
-                    ctx.clearRect(0, 0, 16, 16)
-                    ctx.beginPath()
-                    ctx.arc(8, 8, 7.5, 0, Math.PI * 2)
-                    ctx.fillStyle = "#4D6BFF"
-                    ctx.fill()
-                    ctx.beginPath()
-                    ctx.arc(5.5, 7.5, 2.2, 0, Math.PI * 2)
-                    ctx.fillStyle = "white"
-                    ctx.fill()
-                    ctx.beginPath()
-                    ctx.arc(10.5, 7.5, 2.2, 0, Math.PI * 2)
-                    ctx.fillStyle = "white"
-                    ctx.fill()
-                    ctx.beginPath()
-                    ctx.arc(5.5, 7.5, 1.0, 0, Math.PI * 2)
-                    ctx.fillStyle = "#4D6BFF"
-                    ctx.fill()
-                    ctx.beginPath()
-                    ctx.arc(10.5, 7.5, 1.0, 0, Math.PI * 2)
-                    ctx.fillStyle = "#4D6BFF"
-                    ctx.fill()
-                    ctx.beginPath()
-                    ctx.arc(8, 8, 3.5, 0.2 * Math.PI, 0.8 * Math.PI)
-                    ctx.strokeStyle = "white"
-                    ctx.lineWidth = 1.2
-                    ctx.lineCap = "round"
-                    ctx.stroke()
-                }
+                source: _pluginDir + "res/deepseek.png"
+                sourceSize: Qt.size(16, 16)
+                smooth: true
             }
 
             // Not-logged-in state
@@ -266,10 +245,10 @@ PluginComponent {
                 color: Theme.surfaceVariantText
             }
 
-            // Monthly usage
+            // Today's cost
             StyledText {
                 visible: root.cookieStatus !== "missing"
-                text: root.fetchRunning ? "…" : root.monthlyTokenUsage
+                text: root.fetchRunning ? "…" : root.todayCost
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.surfaceText
             }

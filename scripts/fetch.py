@@ -93,6 +93,24 @@ def parse_total_cost(biz_data_list: list) -> str:
     return f"{total:.10f}" if total > 0 else "0"
 
 
+def parse_daily_cost(biz_data_list: list) -> dict[str, str]:
+    """Map date -> total cost from cost API biz_data periods' days arrays."""
+    out: dict[str, float] = {}
+    for period in biz_data_list:
+        for day in period.get("days", []):
+            date = day.get("date", "")
+            total = 0.0
+            for model_entry in day.get("data", []):
+                for u in model_entry.get("usage", []):
+                    try:
+                        total += float(u.get("amount", 0))
+                    except (TypeError, ValueError):
+                        pass
+            if date:
+                out[date] = out.get(date, 0.0) + total
+    return {d: f"{v:.10f}" for d, v in out.items()}
+
+
 def parse_daily(body: str, cur_day: int) -> list[dict]:
     """Parse group_by=day amount response into [{day, inputTokens, outputTokens}]."""
     try:
@@ -217,6 +235,7 @@ def main() -> int:
         c_code, c_body, c_err = raw.get(key_c, (None, None, "not fetched"))
 
         entry: dict = {"year": y2, "month": m2, "inputTokens": 0, "outputTokens": 0, "cost": "0"}
+        biz_c = None
 
         if not a_err and a_code == 200:
             biz_a = extract_biz_data(a_body or "")
@@ -242,11 +261,18 @@ def main() -> int:
 
         is_current = (y2 == cur_year and m2 == cur_month)
         if is_current:
+            if isinstance(biz_c, list):
+                entry["dailyCost"] = parse_daily_cost(biz_c)
             output["current"] = entry
         else:
             history.append(entry)
 
     output["history"] = history
+
+    # Today's cost from current month's daily cost map (local date, matching platform's calendar days)
+    if output.get("current") and output["current"].get("dailyCost"):
+        today = datetime.now().strftime("%Y-%m-%d")
+        output["todayCost"] = output["current"]["dailyCost"].get(today, "0")
 
     # Parse daily breakdown for current month
     d_code, d_body, d_err = raw.get("daily", (None, None, "not fetched"))
